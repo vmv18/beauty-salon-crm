@@ -1,0 +1,767 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Beauty Salon CRM API",
+        "description": "API для системи управління салоном краси",
+        "contact": {
+            "email": "info@beautysalon.com"
+        },
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/appointments-calendar": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Отримати записи для календаря",
+                "description": "Повертає записи у форматі FullCalendar для відображення в календарі",
+                "operationId": "3c20be6fead78f3b4536319c66a42ae3",
+                "parameters": [
+                    {
+                        "name": "employee_id",
+                        "in": "query",
+                        "description": "ID майстра для фільтрації",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Статус запису",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "scheduled",
+                                "confirmed",
+                                "completed",
+                                "cancelled"
+                            ],
+                            "example": "scheduled"
+                        }
+                    },
+                    {
+                        "name": "start",
+                        "in": "query",
+                        "description": "Початкова дата діапазону",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-12-01"
+                        }
+                    },
+                    {
+                        "name": "end",
+                        "in": "query",
+                        "description": "Кінцева дата діапазону",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-12-31"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                                "example": "Іван Іванов - Стрижка"
+                                            },
+                                            "start": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-12-25T10:00:00+00:00"
+                                            },
+                                            "end": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-12-25T11:00:00+00:00"
+                                            },
+                                            "color": {
+                                                "type": "string",
+                                                "example": "#667eea"
+                                            },
+                                            "extendedProps": {
+                                                "properties": {
+                                                    "client_name": {
+                                                        "type": "string",
+                                                        "example": "Іван Іванов"
+                                                    },
+                                                    "employee_name": {
+                                                        "type": "string",
+                                                        "example": "Майстер"
+                                                    },
+                                                    "service_name": {
+                                                        "type": "string",
+                                                        "example": "Стрижка"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "scheduled"
+                                                    },
+                                                    "price": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 800
+                                                    },
+                                                    "notes": {
+                                                        "type": "string",
+                                                        "example": "Примітки",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизовано"
+                    },
+                    "403": {
+                        "description": "Доступ заборонено"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/api/appointments/{appointment}/update-time": {
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Оновити час запису",
+                "description": "Оновлює час запису (використовується для drag & drop в календарі)",
+                "operationId": "fd72db00d3ba22cfa94aac30817f78c4",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "description": "ID запису",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "start"
+                                ],
+                                "properties": {
+                                    "start": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-12-25T10:00:00+00:00"
+                                    },
+                                    "end": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-12-25T11:00:00+00:00",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Час запису оновлено."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Помилка валідації"
+                    },
+                    "500": {
+                        "description": "Помилка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/api/available-time": {
+            "get": {
+                "tags": [
+                    "Available Time"
+                ],
+                "summary": "Отримати доступні часові слоти",
+                "description": "Повертає список доступних часових слотів для майстра та послуги на вказану дату",
+                "operationId": "8c82b51e91ea7376cdd493fc6f70f504",
+                "parameters": [
+                    {
+                        "name": "employee_id",
+                        "in": "query",
+                        "description": "ID майстра",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "service_id",
+                        "in": "query",
+                        "description": "ID послуги",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Дата у форматі Y-m-d",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-12-25"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "available_slots": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "time": {
+                                                        "type": "string",
+                                                        "example": "10:00"
+                                                    },
+                                                    "display": {
+                                                        "type": "string",
+                                                        "example": "10:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "service_duration": {
+                                            "type": "integer",
+                                            "example": 60
+                                        },
+                                        "working_hours": {
+                                            "properties": {
+                                                "start": {
+                                                    "type": "string",
+                                                    "example": "09:00"
+                                                },
+                                                "end": {
+                                                    "type": "string",
+                                                    "example": "18:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "min_break": {
+                                            "type": "integer",
+                                            "example": 15
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Помилка валідації"
+                    }
+                }
+            }
+        },
+        "/api/check-availability": {
+            "post": {
+                "tags": [
+                    "Available Time"
+                ],
+                "summary": "Перевірити доступність конкретного часу",
+                "description": "Перевіряє, чи доступний конкретний час для бронювання",
+                "operationId": "edab4e8d9ee8424fd7edc9ce8153b032",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "employee_id",
+                                    "service_id",
+                                    "appointment_date",
+                                    "appointment_time"
+                                ],
+                                "properties": {
+                                    "employee_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "service_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "appointment_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-12-25"
+                                    },
+                                    "appointment_time": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "10:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Результат перевірки",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "available": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Час доступний для бронювання."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Помилка валідації"
+                    }
+                }
+            }
+        },
+        "/api/clients/{client}/appointments": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Отримати записи клієнта",
+                "description": "Повертає список записів для вказаного клієнта",
+                "operationId": "bc17cb09e11a34a9a11382922fce5de1",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "path",
+                        "description": "ID клієнта",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "service_name": {
+                                                "type": "string",
+                                                "example": "Стрижка"
+                                            },
+                                            "date": {
+                                                "type": "string",
+                                                "example": "25.12.2024"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Клієнт не знайдений"
+                    }
+                }
+            }
+        },
+        "/api/notifications/unread-count": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Отримати кількість непрочитаних сповіщень",
+                "description": "Повертає кількість непрочитаних сповіщень для поточного користувача",
+                "operationId": "f3e05b69d516049be949f02a45e0eedd",
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизовано"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Отримати список сповіщень",
+                "description": "Повертає список сповіщень для поточного користувача",
+                "operationId": "6d56a555955089a73fdf3f7229e8ead8",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Максимальна кількість сповіщень",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "notifications": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "uuid"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "example": "new_appointment"
+                                                    },
+                                                    "message": {
+                                                        "type": "string",
+                                                        "example": "Новий запис"
+                                                    },
+                                                    "url": {
+                                                        "type": "string",
+                                                        "example": "/appointments/1"
+                                                    },
+                                                    "read_at": {
+                                                        "type": "string",
+                                                        "example": "2024-12-25 10:00:00",
+                                                        "nullable": true
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "25.12.2024 10:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "unread_count": {
+                                            "type": "integer",
+                                            "example": 5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизовано"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications/{id}/read": {
+            "post": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Позначити сповіщення як прочитане",
+                "description": "Позначає конкретне сповіщення як прочитане",
+                "operationId": "89d94089af487b4bafdd6b9db9c55478",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID сповіщення",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "unread_count": {
+                                            "type": "integer",
+                                            "example": 4
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Сповіщення не знайдено"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications/mark-all-read": {
+            "post": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Позначити всі сповіщення як прочитані",
+                "description": "Позначає всі сповіщення користувача як прочитані",
+                "operationId": "2c05d18629d588cb3c35be1ae1577214",
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "unread_count": {
+                                            "type": "integer",
+                                            "example": 0
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизовано"
+                    }
+                },
+                "security": [
+                    {
+                        "session": []
+                    }
+                ]
+            }
+        },
+        "/api/services/{service}/employees": {
+            "get": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Отримати майстрів за послугою",
+                "description": "Повертає список активних майстрів, які надають вказану послугу",
+                "operationId": "fe01532424332e7eba8fc6c1d96bb256",
+                "parameters": [
+                    {
+                        "name": "service",
+                        "in": "path",
+                        "description": "ID послуги",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успішна відповідь",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Майстер"
+                                            },
+                                            "specialization": {
+                                                "type": "string",
+                                                "example": "Стрижка",
+                                                "nullable": true
+                                            },
+                                            "rating": {
+                                                "type": "string",
+                                                "example": "4.8"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Послуга не знайдена"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "session": {
+                "type": "apiKey",
+                "description": "CSRF Token для автентифікації",
+                "name": "X-CSRF-TOKEN",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Appointments",
+            "description": "Appointments"
+        },
+        {
+            "name": "Available Time",
+            "description": "Available Time"
+        },
+        {
+            "name": "Clients",
+            "description": "Clients"
+        },
+        {
+            "name": "Notifications",
+            "description": "Notifications"
+        },
+        {
+            "name": "Services",
+            "description": "Services"
+        }
+    ]
+}

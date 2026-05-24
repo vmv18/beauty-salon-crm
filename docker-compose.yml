@@ -1,0 +1,82 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: beauty-salon-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - beauty-salon-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: beauty-salon-app
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - beauty-salon-network
+    environment:
+      - DB_HOST=mysql
+      - DB_DATABASE=${DB_DATABASE:-beauty_salon}
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-root}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_STORE=redis
+
+  mysql:
+    image: mysql:8.0
+    container_name: beauty-salon-mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-beauty_salon}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+    networks:
+      - beauty-salon-network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: beauty-salon-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - beauty-salon-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: beauty-salon-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - beauty-salon-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  beauty-salon-network:
+    driver: bridge
+
