@@ -7,7 +7,7 @@ services:
     healthCheckPath: /up
     envVars:
       - key: APP_KEY
-        sync: false
+        value: base64:x9+3ah0r0xUeMIhG1doVb87KOwdFc1oSp1QMiLLK7qw=
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
