@@ -4,8 +4,10 @@ services:
     env: docker
     region: frankfurt
     plan: free
-    healthCheckPath: /
+    healthCheckPath: /up
     envVars:
+      - key: APP_KEY
+        sync: false
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
