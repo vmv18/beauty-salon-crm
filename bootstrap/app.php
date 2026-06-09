@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
+    ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (Throwable $e) {
+            echo "<h1>Raw Laravel Exception:</h1>";
+            echo "<pre>" . (string) $e . "</pre>";
+            die();
+        });
     })->create();
