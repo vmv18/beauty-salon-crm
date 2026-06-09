@@ -11,11 +11,11 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: false
+        value: true
       - key: LOG_LEVEL
         value: error
       - key: LOG_CHANNEL
-        value: stderr
+        value: errorlog
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
