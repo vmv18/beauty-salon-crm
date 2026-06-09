@@ -1,11 +1,9 @@
 services:
   - type: web
     name: beauty-salon-crm
-    env: php
+    env: docker
     region: frankfurt
     plan: free
-    buildCommand: chmod +x render-build.sh && ./render-build.sh
-    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
     healthCheckPath: /
     envVars:
       - key: APP_ENV
@@ -36,21 +34,11 @@ services:
         fromDatabase:
           name: beauty-salon-db
           property: password
-      - key: REDIS_HOST
+      - key: REDIS_URL
         fromService:
           type: redis
           name: beauty-salon-redis
-          property: host
-      - key: REDIS_PORT
-        fromService:
-          type: redis
-          name: beauty-salon-redis
-          property: port
-      - key: REDIS_PASSWORD
-        fromService:
-          type: redis
-          name: beauty-salon-redis
-          property: password
+          property: connectionString
       - key: CACHE_STORE
         value: redis
       - key: SESSION_DRIVER
@@ -64,6 +52,7 @@ services:
     name: beauty-salon-redis
     plan: free
     region: frankfurt
+    ipAllowList: []
 
 databases:
   - name: beauty-salon-db
