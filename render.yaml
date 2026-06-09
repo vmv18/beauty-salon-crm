@@ -37,15 +37,18 @@ services:
           name: beauty-salon-db
           property: password
       - key: REDIS_HOST
-        fromRedis:
+        fromService:
+          type: redis
           name: beauty-salon-redis
           property: host
       - key: REDIS_PORT
-        fromRedis:
+        fromService:
+          type: redis
           name: beauty-salon-redis
           property: port
       - key: REDIS_PASSWORD
-        fromRedis:
+        fromService:
+          type: redis
           name: beauty-salon-redis
           property: password
       - key: CACHE_STORE
@@ -57,15 +60,14 @@ services:
       - key: FILESYSTEM_DISK
         value: local
 
+  - type: redis
+    name: beauty-salon-redis
+    plan: free
+    region: frankfurt
+
 databases:
   - name: beauty-salon-db
     databaseName: beauty_salon
     user: beauty_salon_user
     plan: free
     region: frankfurt
-
-redis:
-  - name: beauty-salon-redis
-    plan: free
-    region: frankfurt
-
