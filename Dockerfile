@@ -1,4 +1,4 @@
-FROM php:8.4-fpm
+FROM php:8.4-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -17,6 +17,14 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
+
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
+
+# Update Apache DocumentRoot
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
@@ -51,6 +59,6 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
 # Set entrypoint
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Expose port and start php server
-EXPOSE 8000
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Expose port and start Apache
+EXPOSE 80
+CMD ["apache2-foreground"]
