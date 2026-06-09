@@ -12,6 +12,16 @@ if [ -d "bootstrap/cache" ]; then
     chown -R www-data:www-data bootstrap/cache
 fi
 
+# Run migrations and cache config if we are in production
+if [ "$APP_ENV" = "production" ]; then
+    echo "Running production setup..."
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    php artisan migrate --force
+    # If the database is completely empty and needs seeds, we could run db:seed,
+    # but for safety, it's better to run it manually later or check if admin exists.
+fi
+
 # Execute the original command
 exec "$@"
-
