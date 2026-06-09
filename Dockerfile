@@ -33,6 +33,13 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Set working directory
 WORKDIR /var/www/html
 
+# Copy existing application directory contents
+COPY . /var/www/html
+
+# Install dependencies and build assets
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+RUN npm install && npm run build
+
 # Set permissions for storage and cache directories
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     && mkdir -p storage/logs \
@@ -43,7 +50,6 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
 # Set entrypoint
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
-CMD ["php-fpm"]
-
+# Expose port and start php server
+EXPOSE 8000
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
