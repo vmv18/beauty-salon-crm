@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Update Apache Port to match Render's expected PORT
+if [ -n "$PORT" ]; then
+    sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
+fi
+
 # Fix permissions for storage and cache directories
 if [ -d "storage" ]; then
     chmod -R 775 storage
